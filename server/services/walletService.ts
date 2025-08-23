@@ -59,7 +59,7 @@ export class WalletService {
         to: toAddress,
         value: ethers.parseEther(amount),
         gasPrice: gasPrice.gasPrice,
-        gasLimit: 21000n,
+        gasLimit: BigInt(21000),
       };
 
       // Send transaction
@@ -88,8 +88,8 @@ export class WalletService {
       const gasPrice = await wallet.provider!.getFeeData();
       
       // Estimate gas for ETH transfer (typically 21000)
-      const gasLimit = 21000n;
-      const estimatedFee = gasLimit * (gasPrice.gasPrice || 0n);
+      const gasLimit = BigInt(21000);
+      const estimatedFee = gasLimit * (gasPrice.gasPrice || BigInt(0));
       
       return ethers.formatEther(estimatedFee);
     } catch (error) {

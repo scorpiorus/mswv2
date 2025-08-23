@@ -60,6 +60,7 @@ export default function ImportWalletModal({ isOpen, onClose, onWalletImported }:
   });
 
   const onSubmit = (data: z.infer<typeof importWalletSchema>) => {
+    console.log('Form data being submitted:', data);
     importWalletMutation.mutate(data);
   };
 

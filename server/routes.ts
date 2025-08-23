@@ -52,6 +52,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/wallets", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
+      console.log('Received wallet data:', req.body);
       const walletData = insertWalletSchema.parse(req.body);
 
       // Validate private key

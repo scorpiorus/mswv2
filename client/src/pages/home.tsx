@@ -31,13 +31,13 @@ export default function Home() {
     }
   }, [user, authLoading, toast]);
 
-  const { data: wallets = [], refetch: refetchWallets } = useQuery({
+  const { data: wallets = [], refetch: refetchWallets } = useQuery<any[]>({
     queryKey: ["/api/wallets"],
     enabled: !!user,
     retry: false,
   });
 
-  const { data: transactions = [], refetch: refetchTransactions } = useQuery({
+  const { data: transactions = [], refetch: refetchTransactions } = useQuery<any[]>({
     queryKey: ["/api/transactions"],
     enabled: !!user,
     retry: false,
@@ -81,7 +81,7 @@ export default function Home() {
                 className="flex items-center space-x-2 text-slate-600 hover:text-slate-900"
                 data-testid="button-logout"
               >
-                <span className="hidden sm:inline">{user.email}</span>
+                <span className="hidden sm:inline">{(user as any)?.email || 'User'}</span>
                 <i className="fas fa-sign-out-alt"></i>
               </Button>
             </div>
