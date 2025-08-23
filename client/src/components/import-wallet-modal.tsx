@@ -11,11 +11,9 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 
-const importWalletSchema = z.object({
-  name: z.string().min(1, "Wallet name is required"),
-  encryptedPrivateKey: z.string().min(1, "Private key is required").regex(/^(0x)?[a-fA-F0-9]{64}$/, "Invalid private key format"),
-  network: z.string().default("sepolia"),
-});
+import { frontendWalletSchema } from "@shared/schema";
+
+const importWalletSchema = frontendWalletSchema;
 
 interface ImportWalletModalProps {
   isOpen: boolean;
@@ -30,7 +28,7 @@ export default function ImportWalletModal({ isOpen, onClose, onWalletImported }:
     resolver: zodResolver(importWalletSchema),
     defaultValues: {
       name: "",
-      encryptedPrivateKey: "",
+      privateKey: "",
       network: "sepolia",
     },
   });
@@ -100,7 +98,7 @@ export default function ImportWalletModal({ isOpen, onClose, onWalletImported }:
 
             <FormField
               control={form.control}
-              name="encryptedPrivateKey"
+              name="privateKey"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Private Key</FormLabel>

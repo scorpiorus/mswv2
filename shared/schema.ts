@@ -90,7 +90,14 @@ export const massSendOperations = pgTable("mass_send_operations", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Insert schemas
+// Frontend form schema
+export const frontendWalletSchema = z.object({
+  name: z.string().min(1, "Wallet name is required"),
+  privateKey: z.string().min(1, "Private key is required").regex(/^(0x)?[a-fA-F0-9]{64}$/, "Invalid private key format"),
+  network: z.enum(["sepolia", "goerli", "mainnet"]).default("sepolia"),
+});
+
+// Backend insert schema
 export const insertWalletSchema = createInsertSchema(wallets).omit({
   id: true,
   createdAt: true,
@@ -115,6 +122,7 @@ export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type Wallet = typeof wallets.$inferSelect;
 export type InsertWallet = z.infer<typeof insertWalletSchema>;
+export type FrontendWallet = z.infer<typeof frontendWalletSchema>;
 export type Transaction = typeof transactions.$inferSelect;
 export type InsertTransaction = z.infer<typeof insertTransactionSchema>;
 export type MassSendOperation = typeof massSendOperations.$inferSelect;

@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { WalletService } from "./services/walletService";
-import { insertWalletSchema, insertTransactionSchema, insertMassSendOperationSchema } from "@shared/schema";
+import { frontendWalletSchema, insertTransactionSchema, insertMassSendOperationSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -53,24 +53,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       console.log('Received wallet data:', req.body);
-      const walletData = insertWalletSchema.parse(req.body);
+      const walletData = frontendWalletSchema.parse(req.body);
 
       // Validate private key
-      if (!WalletService.validatePrivateKey(walletData.encryptedPrivateKey)) {
+      if (!WalletService.validatePrivateKey(walletData.privateKey)) {
         return res.status(400).json({ message: "Invalid private key format" });
       }
 
       // Get address from private key
-      const address = WalletService.getAddressFromPrivateKey(walletData.encryptedPrivateKey);
+      const address = WalletService.getAddressFromPrivateKey(walletData.privateKey);
       
       // Encrypt private key
-      const encryptedPrivateKey = WalletService.encryptPrivateKey(walletData.encryptedPrivateKey);
+      const encryptedPrivateKey = WalletService.encryptPrivateKey(walletData.privateKey);
 
       // Get initial balance
       const balance = await WalletService.getBalance(address, walletData.network);
 
       const wallet = await storage.createWallet({
-        ...walletData,
+        name: walletData.name,
+        network: walletData.network,
         userId,
         address,
         encryptedPrivateKey,
