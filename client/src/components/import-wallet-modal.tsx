@@ -133,6 +133,17 @@ export default function ImportWalletModal({ isOpen, onClose, onWalletImported }:
                     <SelectContent>
                       <SelectItem value="sepolia">ETH Sepolia</SelectItem>
                       <SelectItem value="goerli">ETH Goerli</SelectItem>
+                      <SelectItem value="polygon_mumbai">Polygon Mumbai</SelectItem>
+                      <SelectItem value="bsc_testnet">BSC Testnet</SelectItem>
+                      <SelectItem value="arbitrum_goerli">Arbitrum Goerli</SelectItem>
+                      <SelectItem value="optimism_goerli">Optimism Goerli</SelectItem>
+                      <SelectItem value="avalanche_fuji">Avalanche Fuji</SelectItem>
+                      <SelectItem value="mainnet">ETH Mainnet</SelectItem>
+                      <SelectItem value="polygon">Polygon</SelectItem>
+                      <SelectItem value="bsc">BSC Mainnet</SelectItem>
+                      <SelectItem value="arbitrum">Arbitrum</SelectItem>
+                      <SelectItem value="optimism">Optimism</SelectItem>
+                      <SelectItem value="avalanche">Avalanche</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

@@ -42,6 +42,13 @@ export default function SendForm({ wallets, onTransactionComplete }: SendFormPro
   const toAddress = form.watch("toAddress");
 
   const selectedWallet = wallets.find(w => w.id === selectedWalletId);
+  const selectedToken = form.watch("token");
+
+  // Fetch available tokens for the selected wallet's network
+  const { data: availableTokens = [] } = useQuery({
+    queryKey: ["/api/tokens", selectedWallet?.network],
+    enabled: !!selectedWallet?.network,
+  });
 
   // Estimate gas when form values change
   useQuery({
@@ -53,6 +60,7 @@ export default function SendForm({ wallets, onTransactionComplete }: SendFormPro
         fromWalletId: selectedWalletId,
         toAddress,
         amount,
+        token: selectedToken,
       });
       
       const data = await response.json();
@@ -136,7 +144,7 @@ export default function SendForm({ wallets, onTransactionComplete }: SendFormPro
                         <SelectContent>
                           {wallets.map((wallet) => (
                             <SelectItem key={wallet.id} value={wallet.id}>
-                              {wallet.name} ({parseFloat(wallet.balance).toFixed(4)} ETH)
+                              {wallet.name} ({parseFloat(wallet.balance).toFixed(4)} {wallet.network === 'polygon_mumbai' ? 'MATIC' : wallet.network === 'bsc_testnet' ? 'BNB' : wallet.network === 'avalanche_fuji' ? 'AVAX' : 'ETH'})
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -159,7 +167,11 @@ export default function SendForm({ wallets, onTransactionComplete }: SendFormPro
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="ETH">ETH (Sepolia)</SelectItem>
+                          {availableTokens.map((token: any) => (
+                            <SelectItem key={token.symbol} value={token.symbol}>
+                              {token.symbol} ({token.name})
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -203,7 +215,7 @@ export default function SendForm({ wallets, onTransactionComplete }: SendFormPro
                           data-testid="input-amount"
                         />
                       </FormControl>
-                      <span className="absolute right-4 top-3 text-slate-500 font-medium">ETH</span>
+                      <span className="absolute right-4 top-3 text-slate-500 font-medium">{selectedToken}</span>
                     </div>
                     <div className="flex gap-2 mt-3">
                       <Button 

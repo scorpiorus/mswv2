@@ -36,7 +36,21 @@ export const users = pgTable("users", {
 });
 
 // Network enum
-export const networkEnum = pgEnum("network", ["sepolia", "goerli", "mainnet"]);
+export const networkEnum = pgEnum("network", [
+  "sepolia", 
+  "goerli", 
+  "mainnet",
+  "polygon_mumbai",
+  "polygon", 
+  "bsc_testnet",
+  "bsc",
+  "arbitrum_goerli",
+  "arbitrum",
+  "optimism_goerli", 
+  "optimism",
+  "avalanche_fuji",
+  "avalanche"
+]);
 
 // Wallets table
 export const wallets = pgTable("wallets", {
@@ -94,7 +108,21 @@ export const massSendOperations = pgTable("mass_send_operations", {
 export const frontendWalletSchema = z.object({
   name: z.string().min(1, "Wallet name is required"),
   privateKey: z.string().min(1, "Private key is required").regex(/^(0x)?[a-fA-F0-9]{64}$/, "Invalid private key format"),
-  network: z.enum(["sepolia", "goerli", "mainnet"]).default("sepolia"),
+  network: z.enum([
+    "sepolia", 
+    "goerli", 
+    "mainnet",
+    "polygon_mumbai",
+    "polygon", 
+    "bsc_testnet",
+    "bsc",
+    "arbitrum_goerli",
+    "arbitrum",
+    "optimism_goerli", 
+    "optimism",
+    "avalanche_fuji",
+    "avalanche"
+  ]).default("sepolia"),
 });
 
 // Backend insert schema

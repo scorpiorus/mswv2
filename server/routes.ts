@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { WalletService } from "./services/walletService";
+import { TokenService } from "./services/tokenService";
 import { frontendWalletSchema, insertTransactionSchema, insertMassSendOperationSchema } from "@shared/schema";
 import { z } from "zod";
 
@@ -19,6 +20,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // Tokens endpoint
+  app.get("/api/tokens/:network", async (req, res) => {
+    try {
+      const { network } = req.params;
+      const tokens = TokenService.getTokensForNetwork(network);
+      res.json(tokens);
+    } catch (error) {
+      console.error("Error fetching tokens:", error);
+      res.status(500).json({ message: "Failed to fetch tokens" });
     }
   });
 

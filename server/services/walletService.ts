@@ -1,12 +1,23 @@
 import { ethers } from "ethers";
 import { CryptoService } from "./cryptoService";
+import { TokenService } from "./tokenService";
 
 export class WalletService {
   private static getProvider(network: string = "sepolia"): ethers.JsonRpcProvider {
     const rpcUrls: Record<string, string> = {
-      sepolia: process.env.SEPOLIA_RPC_URL || "https://eth-sepolia.g.alchemy.com/v2/demo",
-      goerli: process.env.GOERLI_RPC_URL || "https://eth-goerli.g.alchemy.com/v2/demo",
-      mainnet: process.env.MAINNET_RPC_URL || "https://eth-mainnet.g.alchemy.com/v2/demo",
+      sepolia: process.env.SEPOLIA_RPC_URL || "https://1rpc.io/sepolia",
+      goerli: process.env.GOERLI_RPC_URL || "https://rpc.ankr.com/eth_goerli",
+      mainnet: process.env.MAINNET_RPC_URL || "https://1rpc.io/eth",
+      polygon_mumbai: process.env.POLYGON_MUMBAI_RPC_URL || "https://rpc.ankr.com/polygon_mumbai",
+      polygon: process.env.POLYGON_RPC_URL || "https://1rpc.io/matic",
+      bsc_testnet: process.env.BSC_TESTNET_RPC_URL || "https://data-seed-prebsc-1-s1.binance.org:8545",
+      bsc: process.env.BSC_RPC_URL || "https://1rpc.io/bnb",
+      arbitrum_goerli: process.env.ARBITRUM_GOERLI_RPC_URL || "https://goerli-rollup.arbitrum.io/rpc",
+      arbitrum: process.env.ARBITRUM_RPC_URL || "https://1rpc.io/arb",
+      optimism_goerli: process.env.OPTIMISM_GOERLI_RPC_URL || "https://goerli.optimism.io",
+      optimism: process.env.OPTIMISM_RPC_URL || "https://1rpc.io/op",
+      avalanche_fuji: process.env.AVALANCHE_FUJI_RPC_URL || "https://api.avax-test.network/ext/bc/C/rpc",
+      avalanche: process.env.AVALANCHE_RPC_URL || "https://1rpc.io/avax/c",
     };
 
     return new ethers.JsonRpcProvider(rpcUrls[network]);
@@ -26,11 +37,34 @@ export class WalletService {
     return new ethers.Wallet("0x" + cleanPrivateKey, provider);
   }
 
-  static async getBalance(address: string, network: string = "sepolia"): Promise<string> {
+  static async getBalance(address: string, network: string = "sepolia", tokenSymbol: string = "ETH"): Promise<string> {
     try {
       const provider = this.getProvider(network);
-      const balance = await provider.getBalance(address);
-      return ethers.formatEther(balance);
+      
+      // Get token info
+      const token = TokenService.getTokenBySymbol(network, tokenSymbol);
+      if (!token) {
+        console.error(`Token ${tokenSymbol} not found for network ${network}`);
+        return "0";
+      }
+
+      if (TokenService.isNativeToken(network, tokenSymbol)) {
+        // Native token balance
+        const balance = await provider.getBalance(address);
+        return ethers.formatEther(balance);
+      } else {
+        // ERC20 token balance
+        const erc20Abi = [
+          "function balanceOf(address owner) view returns (uint256)",
+          "function decimals() view returns (uint8)"
+        ];
+        
+        const contract = new ethers.Contract(token.address!, erc20Abi, provider);
+        const balance = await contract.balanceOf(address);
+        const decimals = await contract.decimals();
+        
+        return ethers.formatUnits(balance, decimals);
+      }
     } catch (error) {
       console.error("Error getting balance:", error);
       return "0";
