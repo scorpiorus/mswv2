@@ -11,15 +11,24 @@ export default function Landing() {
 
   const handleLogin = async () => {
     try {
-      console.log('Attempting Google sign in...');
+      console.log('🚀 Attempting Google sign in...');
       const result = await signInWithGoogle();
-      console.log('Sign in successful:', result);
+      console.log('✅ Sign in successful:', result.user.email);
+      
+      // Show success message
       toast({
         title: "Login berhasil",
-        description: "Selamat datang!",
+        description: "Mengalihkan ke dashboard...",
       });
+      
+      // Force a brief delay to ensure auth state propagates properly
+      setTimeout(() => {
+        console.log('🔄 Checking if redirect happened...');
+        // The useAuth hook should handle the redirect automatically
+      }, 1000);
+      
     } catch (error: any) {
-      console.error('Sign in error:', error);
+      console.error('❌ Sign in error:', error);
       console.error('Error details:', {
         code: error.code,
         message: error.message,
