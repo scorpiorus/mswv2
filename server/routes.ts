@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { WalletService } from "./services/walletService";
 import { TokenService } from "./services/tokenService";
-import { frontendWalletSchema, insertTransactionSchema, insertMassSendOperationSchema } from "@shared/schema";
+import { frontendWalletSchema, insertTransactionSchema, insertMassSendOperationSchema, customNetworkSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -318,6 +318,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error estimating gas:", error);
       res.status(500).json({ message: "Failed to estimate gas" });
+    }
+  });
+
+  // Custom network routes
+  app.get("/api/custom-networks", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const networks = await storage.getUserCustomNetworks(userId);
+      res.json(networks);
+    } catch (error) {
+      console.error("Error fetching custom networks:", error);
+      res.status(500).json({ message: "Failed to fetch custom networks" });
+    }
+  });
+
+  app.post("/api/custom-networks", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const networkData = customNetworkSchema.parse(req.body);
+
+      const network = await storage.createCustomNetwork({
+        ...networkData,
+        userId,
+      });
+
+      res.json(network);
+    } catch (error) {
+      console.error("Error creating custom network:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid network data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create custom network" });
+    }
+  });
+
+  app.delete("/api/custom-networks/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const networkId = req.params.id;
+
+      await storage.deleteCustomNetwork(networkId, userId);
+      res.json({ message: "Custom network deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting custom network:", error);
+      res.status(500).json({ message: "Failed to delete custom network" });
+    }
+  });
+
+  // Network info route
+  app.get("/api/networks", async (req, res) => {
+    try {
+      const networks = [
+        { id: "sepolia", name: "Ethereum Sepolia", symbol: "ETH", isTestnet: true, chainId: 11155111 },
+        { id: "goerli", name: "Ethereum Goerli", symbol: "ETH", isTestnet: true, chainId: 5 },
+        { id: "mainnet", name: "Ethereum Mainnet", symbol: "ETH", isTestnet: false, chainId: 1 },
+        { id: "polygon_mumbai", name: "Polygon Mumbai", symbol: "MATIC", isTestnet: true, chainId: 80001 },
+        { id: "polygon", name: "Polygon Mainnet", symbol: "MATIC", isTestnet: false, chainId: 137 },
+        { id: "bsc_testnet", name: "BSC Testnet", symbol: "BNB", isTestnet: true, chainId: 97 },
+        { id: "bsc", name: "BSC Mainnet", symbol: "BNB", isTestnet: false, chainId: 56 },
+        { id: "arbitrum_goerli", name: "Arbitrum Goerli", symbol: "ETH", isTestnet: true, chainId: 421613 },
+        { id: "arbitrum", name: "Arbitrum One", symbol: "ETH", isTestnet: false, chainId: 42161 },
+        { id: "optimism_goerli", name: "Optimism Goerli", symbol: "ETH", isTestnet: true, chainId: 420 },
+        { id: "optimism", name: "Optimism Mainnet", symbol: "ETH", isTestnet: false, chainId: 10 },
+        { id: "avalanche_fuji", name: "Avalanche Fuji", symbol: "AVAX", isTestnet: true, chainId: 43113 },
+        { id: "avalanche", name: "Avalanche C-Chain", symbol: "AVAX", isTestnet: false, chainId: 43114 },
+        { id: "monad_testnet", name: "Monad Testnet", symbol: "MON", isTestnet: true, chainId: 41454 },
+        { id: "base_sepolia", name: "Base Sepolia", symbol: "ETH", isTestnet: true, chainId: 84532 },
+        { id: "base", name: "Base Mainnet", symbol: "ETH", isTestnet: false, chainId: 8453 },
+        { id: "fantom_testnet", name: "Fantom Testnet", symbol: "FTM", isTestnet: true, chainId: 4002 },
+        { id: "fantom", name: "Fantom Opera", symbol: "FTM", isTestnet: false, chainId: 250 },
+        { id: "celo_alfajores", name: "Celo Alfajores", symbol: "CELO", isTestnet: true, chainId: 44787 },
+        { id: "celo", name: "Celo Mainnet", symbol: "CELO", isTestnet: false, chainId: 42220 },
+        { id: "linea_testnet", name: "Linea Testnet", symbol: "ETH", isTestnet: true, chainId: 59140 },
+        { id: "linea", name: "Linea Mainnet", symbol: "ETH", isTestnet: false, chainId: 59144 },
+      ];
+      res.json(networks);
+    } catch (error) {
+      console.error("Error fetching networks:", error);
+      res.status(500).json({ message: "Failed to fetch networks" });
     }
   });
 

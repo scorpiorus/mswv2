@@ -3,6 +3,7 @@ import {
   wallets,
   transactions,
   massSendOperations,
+  customNetworks,
   type User,
   type UpsertUser,
   type Wallet,
@@ -11,6 +12,8 @@ import {
   type InsertTransaction,
   type MassSendOperation,
   type InsertMassSendOperation,
+  type CustomNetwork,
+  type InsertCustomNetwork,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and } from "drizzle-orm";
@@ -35,6 +38,12 @@ export interface IStorage {
   // Mass send operations
   createMassSendOperation(operation: InsertMassSendOperation): Promise<MassSendOperation>;
   updateMassSendOperation(id: string, updates: Partial<MassSendOperation>): Promise<void>;
+  
+  // Custom network operations
+  getUserCustomNetworks(userId: string): Promise<CustomNetwork[]>;
+  createCustomNetwork(network: InsertCustomNetwork): Promise<CustomNetwork>;
+  getCustomNetwork(id: string): Promise<CustomNetwork | undefined>;
+  deleteCustomNetwork(id: string, userId: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -135,6 +144,37 @@ export class DatabaseStorage implements IStorage {
       .update(massSendOperations)
       .set({ ...updates, updatedAt: new Date() })
       .where(eq(massSendOperations.id, id));
+  }
+
+  // Custom network operations
+  async getUserCustomNetworks(userId: string): Promise<CustomNetwork[]> {
+    return await db
+      .select()
+      .from(customNetworks)
+      .where(eq(customNetworks.userId, userId))
+      .orderBy(desc(customNetworks.createdAt));
+  }
+
+  async createCustomNetwork(network: InsertCustomNetwork): Promise<CustomNetwork> {
+    const [newNetwork] = await db
+      .insert(customNetworks)
+      .values(network)
+      .returning();
+    return newNetwork;
+  }
+
+  async getCustomNetwork(id: string): Promise<CustomNetwork | undefined> {
+    const [network] = await db
+      .select()
+      .from(customNetworks)
+      .where(eq(customNetworks.id, id));
+    return network;
+  }
+
+  async deleteCustomNetwork(id: string, userId: string): Promise<void> {
+    await db
+      .delete(customNetworks)
+      .where(and(eq(customNetworks.id, id), eq(customNetworks.userId, userId)));
   }
 }
 

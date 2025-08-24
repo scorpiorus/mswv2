@@ -131,19 +131,28 @@ export default function ImportWalletModal({ isOpen, onClose, onWalletImported }:
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="sepolia">ETH Sepolia</SelectItem>
-                      <SelectItem value="goerli">ETH Goerli</SelectItem>
+                      <SelectItem value="sepolia">Ethereum Sepolia</SelectItem>
+                      <SelectItem value="goerli">Ethereum Goerli</SelectItem>
                       <SelectItem value="polygon_mumbai">Polygon Mumbai</SelectItem>
                       <SelectItem value="bsc_testnet">BSC Testnet</SelectItem>
                       <SelectItem value="arbitrum_goerli">Arbitrum Goerli</SelectItem>
                       <SelectItem value="optimism_goerli">Optimism Goerli</SelectItem>
                       <SelectItem value="avalanche_fuji">Avalanche Fuji</SelectItem>
-                      <SelectItem value="mainnet">ETH Mainnet</SelectItem>
-                      <SelectItem value="polygon">Polygon</SelectItem>
+                      <SelectItem value="monad_testnet">Monad Testnet</SelectItem>
+                      <SelectItem value="base_sepolia">Base Sepolia</SelectItem>
+                      <SelectItem value="fantom_testnet">Fantom Testnet</SelectItem>
+                      <SelectItem value="celo_alfajores">Celo Alfajores</SelectItem>
+                      <SelectItem value="linea_testnet">Linea Testnet</SelectItem>
+                      <SelectItem value="mainnet">Ethereum Mainnet</SelectItem>
+                      <SelectItem value="polygon">Polygon Mainnet</SelectItem>
                       <SelectItem value="bsc">BSC Mainnet</SelectItem>
-                      <SelectItem value="arbitrum">Arbitrum</SelectItem>
-                      <SelectItem value="optimism">Optimism</SelectItem>
-                      <SelectItem value="avalanche">Avalanche</SelectItem>
+                      <SelectItem value="arbitrum">Arbitrum One</SelectItem>
+                      <SelectItem value="optimism">Optimism Mainnet</SelectItem>
+                      <SelectItem value="avalanche">Avalanche C-Chain</SelectItem>
+                      <SelectItem value="base">Base Mainnet</SelectItem>
+                      <SelectItem value="fantom">Fantom Opera</SelectItem>
+                      <SelectItem value="celo">Celo Mainnet</SelectItem>
+                      <SelectItem value="linea">Linea Mainnet</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

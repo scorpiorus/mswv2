@@ -18,6 +18,34 @@ const sendFormSchema = z.object({
   token: z.string().default("ETH"),
 });
 
+const getNetworkSymbol = (network: string): string => {
+  const networkSymbols: Record<string, string> = {
+    sepolia: "ETH",
+    goerli: "ETH",
+    mainnet: "ETH",
+    polygon_mumbai: "MATIC",
+    polygon: "MATIC",
+    bsc_testnet: "BNB",
+    bsc: "BNB",
+    arbitrum_goerli: "ETH",
+    arbitrum: "ETH",
+    optimism_goerli: "ETH",
+    optimism: "ETH",
+    avalanche_fuji: "AVAX",
+    avalanche: "AVAX",
+    monad_testnet: "MON",
+    base_sepolia: "ETH",
+    base: "ETH",
+    fantom_testnet: "FTM",
+    fantom: "FTM",
+    celo_alfajores: "CELO",
+    celo: "CELO",
+    linea_testnet: "ETH",
+    linea: "ETH",
+  };
+  return networkSymbols[network] || "ETH";
+};
+
 interface SendFormProps {
   wallets: any[];
   onTransactionComplete: () => void;
@@ -45,7 +73,7 @@ export default function SendForm({ wallets, onTransactionComplete }: SendFormPro
   const selectedToken = form.watch("token");
 
   // Fetch available tokens for the selected wallet's network
-  const { data: availableTokens = [] } = useQuery({
+  const { data: availableTokens = [] } = useQuery<any[]>({
     queryKey: ["/api/tokens", selectedWallet?.network],
     enabled: !!selectedWallet?.network,
   });
@@ -144,7 +172,7 @@ export default function SendForm({ wallets, onTransactionComplete }: SendFormPro
                         <SelectContent>
                           {wallets.map((wallet) => (
                             <SelectItem key={wallet.id} value={wallet.id}>
-                              {wallet.name} ({parseFloat(wallet.balance).toFixed(4)} {wallet.network === 'polygon_mumbai' ? 'MATIC' : wallet.network === 'bsc_testnet' ? 'BNB' : wallet.network === 'avalanche_fuji' ? 'AVAX' : 'ETH'})
+                              {wallet.name} ({parseFloat(wallet.balance).toFixed(4)} {getNetworkSymbol(wallet.network)})
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -167,7 +195,7 @@ export default function SendForm({ wallets, onTransactionComplete }: SendFormPro
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {availableTokens.map((token: any) => (
+                          {(availableTokens as any[]).map((token: any) => (
                             <SelectItem key={token.symbol} value={token.symbol}>
                               {token.symbol} ({token.name})
                             </SelectItem>

@@ -49,7 +49,17 @@ export const networkEnum = pgEnum("network", [
   "optimism_goerli", 
   "optimism",
   "avalanche_fuji",
-  "avalanche"
+  "avalanche",
+  "monad_testnet",
+  "base_sepolia",
+  "base",
+  "fantom_testnet",
+  "fantom",
+  "celo_alfajores",
+  "celo",
+  "linea_testnet",
+  "linea",
+  "custom"
 ]);
 
 // Wallets table
@@ -90,6 +100,21 @@ export const transactions = pgTable("transactions", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Custom networks table
+export const customNetworks = pgTable("custom_networks", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  name: varchar("name").notNull(),
+  displayName: varchar("display_name").notNull(),
+  rpcUrl: varchar("rpc_url").notNull(),
+  chainId: varchar("chain_id").notNull(),
+  symbol: varchar("symbol").notNull().default("ETH"),
+  explorerUrl: varchar("explorer_url"),
+  isTestnet: boolean("is_testnet").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Mass send operations table
 export const massSendOperations = pgTable("mass_send_operations", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -121,8 +146,29 @@ export const frontendWalletSchema = z.object({
     "optimism_goerli", 
     "optimism",
     "avalanche_fuji",
-    "avalanche"
+    "avalanche",
+    "monad_testnet",
+    "base_sepolia",
+    "base",
+    "fantom_testnet",
+    "fantom",
+    "celo_alfajores",
+    "celo",
+    "linea_testnet",
+    "linea",
+    "custom"
   ]).default("sepolia"),
+  customNetworkId: z.string().optional(),
+});
+
+export const customNetworkSchema = z.object({
+  name: z.string().min(1, "Network name is required"),
+  displayName: z.string().min(1, "Display name is required"),
+  rpcUrl: z.string().url("Invalid RPC URL"),
+  chainId: z.string().min(1, "Chain ID is required"),
+  symbol: z.string().min(1, "Symbol is required").default("ETH"),
+  explorerUrl: z.string().url().optional(),
+  isTestnet: z.boolean().default(true),
 });
 
 // Backend insert schema
@@ -145,6 +191,12 @@ export const insertMassSendOperationSchema = createInsertSchema(massSendOperatio
   updatedAt: true,
 });
 
+export const insertCustomNetworkSchema = createInsertSchema(customNetworks).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -155,3 +207,6 @@ export type Transaction = typeof transactions.$inferSelect;
 export type InsertTransaction = z.infer<typeof insertTransactionSchema>;
 export type MassSendOperation = typeof massSendOperations.$inferSelect;
 export type InsertMassSendOperation = z.infer<typeof insertMassSendOperationSchema>;
+export type CustomNetwork = typeof customNetworks.$inferSelect;
+export type InsertCustomNetwork = z.infer<typeof insertCustomNetworkSchema>;
+export type CustomNetworkForm = z.infer<typeof customNetworkSchema>;

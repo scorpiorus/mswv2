@@ -8,6 +8,7 @@ import SendForm from "@/components/send-form";
 import MassSendForm from "@/components/mass-send-form";
 import TransactionHistory from "@/components/transaction-history";
 import ImportWalletModal from "@/components/import-wallet-modal";
+import CustomNetworkModal from "@/components/custom-network-modal";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 
@@ -15,6 +16,7 @@ export default function Home() {
   const { user, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isCustomNetworkModalOpen, setIsCustomNetworkModalOpen] = useState(false);
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -114,14 +116,25 @@ export default function Home() {
           <TabsContent value="wallets">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-slate-900">My Wallets</h2>
-              <Button 
-                onClick={() => setIsImportModalOpen(true)}
-                className="bg-primary-600 text-white px-4 py-2 rounded-xl font-medium hover:bg-primary-700 transition-all flex items-center"
-                data-testid="button-import-wallet"
-              >
-                <i className="fas fa-plus mr-2"></i>
-                Import Wallet
-              </Button>
+              <div className="flex gap-3">
+                <Button 
+                  onClick={() => setIsImportModalOpen(true)}
+                  className="bg-primary-600 text-white px-4 py-2 rounded-xl font-medium hover:bg-primary-700 transition-all flex items-center"
+                  data-testid="button-import-wallet"
+                >
+                  <i className="fas fa-plus mr-2"></i>
+                  Import Wallet
+                </Button>
+                <Button
+                  onClick={() => setIsCustomNetworkModalOpen(true)}
+                  variant="outline"
+                  className="border-primary-600 text-primary-600 hover:bg-primary-50 px-4 py-2 rounded-xl font-medium flex items-center"
+                  data-testid="button-add-network"
+                >
+                  <i className="fas fa-network-wired mr-2"></i>
+                  Add Network
+                </Button>
+              </div>
             </div>
 
             {wallets.length === 0 ? (
@@ -180,6 +193,15 @@ export default function Home() {
         isOpen={isImportModalOpen}
         onClose={() => setIsImportModalOpen(false)}
         onWalletImported={refetchWallets}
+      />
+      
+      <CustomNetworkModal
+        isOpen={isCustomNetworkModalOpen}
+        onClose={() => setIsCustomNetworkModalOpen(false)}
+        onNetworkAdded={() => {
+          // Refetch any network-related data if needed
+          console.log('Custom network added successfully');
+        }}
       />
     </div>
   );
