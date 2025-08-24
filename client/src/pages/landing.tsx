@@ -12,12 +12,22 @@ export default function Landing() {
   const handleLogin = async () => {
     try {
       console.log('Attempting Google sign in...');
-      await signInWithGoogle();
-    } catch (error) {
+      const result = await signInWithGoogle();
+      console.log('Sign in successful:', result);
+      toast({
+        title: "Login berhasil",
+        description: "Selamat datang!",
+      });
+    } catch (error: any) {
       console.error('Sign in error:', error);
+      console.error('Error details:', {
+        code: error.code,
+        message: error.message,
+        credential: error.credential
+      });
       toast({
         title: "Login gagal",
-        description: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        description: `Error: ${error.code || error.message || 'Unknown error'}`,
         variant: "destructive",
       });
     }
@@ -42,6 +52,17 @@ export default function Landing() {
             <p className="text-slate-600 mb-6">
               Sign in with your Google account to access your crypto wallets and manage testnet transactions.
             </p>
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-sm">
+              <p className="text-red-800">
+                <strong>Configuration Error:</strong> Firebase environment variables appear to be incorrect. 
+              </p>
+              <p className="text-red-700 mt-2">
+                Please check that you've provided the correct values:
+                <br/>• <code>VITE_FIREBASE_PROJECT_ID</code> should be your project name (e.g., "my-wallet-app")
+                <br/>• <code>VITE_FIREBASE_APP_ID</code> should be like "1:123456:web:abc123def456"
+                <br/>• <code>VITE_FIREBASE_API_KEY</code> should be your Web API key
+              </p>
+            </div>
             <Button 
               onClick={handleLogin}
               className="w-full bg-primary-600 text-white py-3 px-4 rounded-xl font-medium hover:bg-primary-700 transition-all"
