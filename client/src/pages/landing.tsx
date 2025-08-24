@@ -1,9 +1,33 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { signInWithGoogle, handleRedirectResult } from "@/lib/firebase";
+import { useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Landing() {
+  const { toast } = useToast();
+
+  useEffect(() => {
+    // Handle redirect result when coming back from Google
+    handleRedirectResult().then((result) => {
+      if (result?.user) {
+        toast({
+          title: "Login berhasil",
+          description: "Selamat datang!",
+        });
+      }
+    }).catch((error) => {
+      console.error("Login error:", error);
+      toast({
+        title: "Login gagal",
+        description: "Terjadi kesalahan saat login",
+        variant: "destructive",
+      });
+    });
+  }, [toast]);
+
   const handleLogin = () => {
-    window.location.href = "/api/login";
+    signInWithGoogle();
   };
 
   return (
@@ -23,14 +47,14 @@ export default function Landing() {
           <CardContent className="p-8">
             <h2 className="text-2xl font-semibold mb-6">Sign In</h2>
             <p className="text-slate-600 mb-6">
-              Sign in with your Replit account to access your crypto wallets and manage testnet transactions.
+              Sign in with your Google account to access your crypto wallets and manage testnet transactions.
             </p>
             <Button 
               onClick={handleLogin}
               className="w-full bg-primary-600 text-white py-3 px-4 rounded-xl font-medium hover:bg-primary-700 transition-all"
               data-testid="button-login"
             >
-              Sign In with Replit
+              Sign In with Google
             </Button>
           </CardContent>
         </Card>

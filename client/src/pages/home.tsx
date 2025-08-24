@@ -21,17 +21,10 @@ export default function Home() {
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!authLoading && !user) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 500);
+      // User is not authenticated, let the router handle showing the landing page
       return;
     }
-  }, [user, authLoading, toast]);
+  }, [user, authLoading]);
 
   const { data: wallets = [], refetch: refetchWallets } = useQuery<any[]>({
     queryKey: ["/api/wallets"],
@@ -45,8 +38,22 @@ export default function Home() {
     retry: false,
   });
 
-  const handleLogout = () => {
-    window.location.href = "/api/logout";
+  const handleLogout = async () => {
+    try {
+      const { signOutUser } = await import("@/lib/firebase");
+      await signOutUser();
+      toast({
+        title: "Logout berhasil",
+        description: "Anda telah keluar dari aplikasi",
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast({
+        title: "Logout gagal",
+        description: "Terjadi kesalahan saat logout",
+        variant: "destructive",
+      });
+    }
   };
 
   if (authLoading || !user) {
@@ -83,7 +90,7 @@ export default function Home() {
                 className="flex items-center space-x-2 text-slate-600 hover:text-slate-900"
                 data-testid="button-logout"
               >
-                <span className="hidden sm:inline">{(user as any)?.email || 'User'}</span>
+                <span className="hidden sm:inline">{user?.email || user?.displayName || 'User'}</span>
                 <i className="fas fa-sign-out-alt"></i>
               </Button>
             </div>

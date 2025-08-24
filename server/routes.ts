@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupAuth, isAuthenticated } from "./firebaseAuth";
 import { WalletService } from "./services/walletService";
 import { TokenService } from "./services/tokenService";
 import { frontendWalletSchema, insertTransactionSchema, insertMassSendOperationSchema, customNetworkSchema } from "@shared/schema";
