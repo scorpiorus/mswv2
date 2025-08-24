@@ -7,6 +7,13 @@ export function useAuth() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // If Firebase auth is not configured, consider user as not authenticated
+    if (!auth) {
+      setIsLoading(false);
+      setUser(null);
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
@@ -53,7 +60,7 @@ export function useAuth() {
       setIsLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => unsubscribe?.();
   }, []);
 
   return {
