@@ -23,5 +23,6 @@
   ],
   "env": {
     "NODE_ENV": "production"
-  }
+  },
+  "outputDirectory": "client/dist"
 }
