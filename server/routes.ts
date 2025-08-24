@@ -1,9 +1,9 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./firebaseAuth";
-import { WalletService } from "./services/walletService";
-import { TokenService } from "./services/tokenService";
+import { storage } from "./storage.js";
+import { setupAuth, isAuthenticated } from "./firebaseAuth.js";
+import { WalletService } from "./services/walletService.js";
+import { TokenService } from "./services/tokenService.js";
 import { frontendWalletSchema, insertTransactionSchema, insertMassSendOperationSchema, customNetworkSchema } from "@shared/schema";
 import { z } from "zod";
 
