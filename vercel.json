@@ -13,13 +13,13 @@
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist/public"
+        "distDir": "client/dist"
       }
     }
   ],
   "routes": [
     { "src": "/api/(.*)", "dest": "/server/index.ts" },
-    { "src": "/(.*)", "dest": "/dist/public/$1" }
+    { "src": "/(.*)", "dest": "/client/dist/$1" }
   ],
   "env": {
     "NODE_ENV": "production"
