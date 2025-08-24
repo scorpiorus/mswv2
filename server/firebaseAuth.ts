@@ -36,26 +36,44 @@ export function setupAuth(app: any) {
     try {
       const { idToken, user } = req.body;
       
+      console.log("Login attempt for user:", user?.email);
+      
       if (!idToken || !user) {
+        console.error("Missing idToken or user data");
         return res.status(400).json({ message: "ID token and user data required" });
       }
 
       // Store user in session
       (req.session as any).firebaseUser = user;
+      console.log("User stored in session");
       
       // Upsert user in database
-      await storage.upsertUser({
-        id: user.uid,
-        email: user.email,
-        firstName: user.displayName?.split(' ')[0] || '',
-        lastName: user.displayName?.split(' ').slice(1).join(' ') || '',
-        profileImageUrl: user.photoURL,
-      });
+      try {
+        const userData = {
+          id: user.uid,
+          email: user.email,
+          firstName: user.displayName?.split(' ')[0] || '',
+          lastName: user.displayName?.split(' ').slice(1).join(' ') || '',
+          profileImageUrl: user.photoURL,
+        };
+        
+        console.log("Attempting to upsert user:", userData.email);
+        await storage.upsertUser(userData);
+        console.log("User upserted successfully");
+        
+      } catch (dbError) {
+        console.error("Database upsert error:", dbError);
+        // Continue with session-only auth if database fails
+        console.log("Continuing with session-only authentication");
+      }
 
       res.json({ success: true });
     } catch (error) {
       console.error("Login error:", error);
-      res.status(500).json({ message: "Login failed" });
+      res.status(500).json({ 
+        message: "Login failed", 
+        error: process.env.NODE_ENV === "development" ? error.message : undefined 
+      });
     }
   });
 
