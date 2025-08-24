@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
-import { CryptoService } from "./cryptoService";
-import { TokenService } from "./tokenService";
-import { storage } from "../storage";
+import { CryptoService } from "./cryptoService.js";
+import { TokenService } from "./tokenService.js";
+import { storage } from "../storage.js";
 
 export class WalletService {
   private static async getProvider(network: string = "sepolia", customNetworkId?: string): Promise<ethers.JsonRpcProvider> {
@@ -241,4 +241,4 @@ export class WalletService {
     };
     return chainIds[network] || 1;
   }
-}
+  }
