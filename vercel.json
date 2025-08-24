@@ -5,7 +5,7 @@
       "src": "server/index.ts",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": ["server/**", "shared/**"],
+        "includeFiles": ["server/**/*.js", "shared/**/*.js", "shared/**/*.ts"],
         "maxDuration": 30
       }
     },
@@ -18,15 +18,13 @@
     }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "/server/index.ts" },
+    { "src": "/api/(.*)", "dest": "/server/index.js" },
     { "src": "/(.*)", "dest": "/client/dist/$1" }
   ],
-  "env": {
-    "NODE_ENV": "production",
-    "DATABASE_URL": "@database_url",
-    "VITE_FIREBASE_API_KEY": "@vite_firebase_api_key",
-    "VITE_FIREBASE_PROJECT_ID": "@vite_firebase_project_id", 
-    "VITE_FIREBASE_APP_ID": "@vite_firebase_app_id"
+  "functions": {
+    "server/index.js": {
+      "includeFiles": "shared/**"
+    }
   },
   "outputDirectory": "client/dist"
 }
