@@ -1,4 +1,4 @@
-mport { ethers } from "ethers";
+import { ethers } from "ethers";
 import { CryptoService } from "./cryptoService.js";
 import { TokenService } from "./tokenService.js";
 import { storage } from "../storage.js";
