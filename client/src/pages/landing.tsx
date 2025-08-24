@@ -7,27 +7,20 @@ import { useToast } from "@/hooks/use-toast";
 export default function Landing() {
   const { toast } = useToast();
 
-  useEffect(() => {
-    // Handle redirect result when coming back from Google
-    handleRedirectResult().then((result) => {
-      if (result?.user) {
-        toast({
-          title: "Login berhasil",
-          description: "Selamat datang!",
-        });
-      }
-    }).catch((error) => {
-      console.error("Login error:", error);
+  // Remove redirect handling since we're using popup now
+
+  const handleLogin = async () => {
+    try {
+      console.log('Attempting Google sign in...');
+      await signInWithGoogle();
+    } catch (error) {
+      console.error('Sign in error:', error);
       toast({
         title: "Login gagal",
-        description: "Terjadi kesalahan saat login",
+        description: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: "destructive",
       });
-    });
-  }, [toast]);
-
-  const handleLogin = () => {
-    signInWithGoogle();
+    }
   };
 
   return (

@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -19,7 +19,13 @@ googleProvider.setCustomParameters({
 });
 
 export const signInWithGoogle = () => {
-  return signInWithRedirect(auth, googleProvider);
+  console.log('Firebase config:', {
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY ? 'Set' : 'Not set',
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID ? 'Set' : 'Not set',
+    appId: import.meta.env.VITE_FIREBASE_APP_ID ? 'Set' : 'Not set'
+  });
+  // Use popup instead of redirect for better debugging
+  return signInWithPopup(auth, googleProvider);
 };
 
 export const handleRedirectResult = () => {
