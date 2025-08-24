@@ -52,15 +52,9 @@ export default function Landing() {
             <p className="text-slate-600 mb-6">
               Sign in with your Google account to access your crypto wallets and manage testnet transactions.
             </p>
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-sm">
-              <p className="text-red-800">
-                <strong>Configuration Error:</strong> Firebase environment variables appear to be incorrect. 
-              </p>
-              <p className="text-red-700 mt-2">
-                Please check that you've provided the correct values:
-                <br/>• <code>VITE_FIREBASE_PROJECT_ID</code> should be your project name (e.g., "my-wallet-app")
-                <br/>• <code>VITE_FIREBASE_APP_ID</code> should be like "1:123456:web:abc123def456"
-                <br/>• <code>VITE_FIREBASE_API_KEY</code> should be your Web API key
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-sm">
+              <p className="text-blue-800">
+                <strong>Info:</strong> Pastikan domain ini (Replit URL) sudah ditambahkan ke Firebase Console di Authentication → Settings → Authorized domains.
               </p>
             </div>
             <Button 
